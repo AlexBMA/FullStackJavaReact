@@ -2,6 +2,7 @@ package io.stivaplina.pptool.services;
 
 import io.stivaplina.pptool.domain.Project;
 import io.stivaplina.pptool.exception.ProjectIdException;
+import io.stivaplina.pptool.exception.ProjectIdExceptionResponse;
 import io.stivaplina.pptool.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,13 @@ public class ProjectService {
     }
 
     public Project findProjectByIdentifier(String projectId){
-        return projectRepository.findByProjectIdentifier(projectId.toUpperCase()).orElse(null);
+        String projectIdentifierToUpperCase = projectId.toUpperCase();
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifierToUpperCase).orElse(null);
+        if(project==null){
+            throw new ProjectIdException("Project '" + projectIdentifierToUpperCase + "' does not exits");
+        }
+
+        return project;
     }
 
 }
