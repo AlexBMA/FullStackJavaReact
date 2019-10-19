@@ -31,6 +31,15 @@ public class ProjectController {
         return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{projectId}")
+    public ResponseEntity<?> updateTheProject(@PathVariable String projectId, @Valid @RequestBody Project project,BindingResult result){
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+        if (errorMap != null) return errorMap;
+
+        Project savedProject = projectService.saveOrUpdateProject(project);
+        return new ResponseEntity<>(savedProject, HttpStatus.OK);
+    }
+
     @GetMapping("/{projectId}")
     public ResponseEntity<?> getProjectById(@PathVariable String projectId){
         Project project = projectService.findProjectByIdentifier(projectId);
@@ -40,6 +49,12 @@ public class ProjectController {
     public ResponseEntity<?> getAllProjects(){
         List<Project> projectList = projectService.findAll();
         return new ResponseEntity<>(projectList,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<?> deleteById(@PathVariable String projectId){
+         projectService.deleteProjectByIdentifier(projectId);
+         return new ResponseEntity<>("Project with Id "+projectId+" was deleted. ",HttpStatus.OK);
     }
 
 }

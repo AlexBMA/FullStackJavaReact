@@ -2,12 +2,13 @@ package io.stivaplina.pptool.services;
 
 import io.stivaplina.pptool.domain.Project;
 import io.stivaplina.pptool.exception.ProjectIdException;
-import io.stivaplina.pptool.exception.ProjectIdExceptionResponse;
 import io.stivaplina.pptool.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -41,6 +42,14 @@ public class ProjectService {
 
     public List<Project> findAll(){
         return projectRepository.findAll();
+    }
+
+    @Transactional
+    public void deleteProjectByIdentifier(String projectId){
+        String projectIdentifierToUpperCase = projectId.toUpperCase();
+        Optional<Project> optionalProject = projectRepository.findByProjectIdentifier(projectIdentifierToUpperCase);
+        optionalProject.ifPresent(project-> projectRepository.delete(project));
+        optionalProject.orElseThrow(()->new ProjectIdException("Cannot delete project with "+projectId+".This project does not exits"));
     }
 
 }
