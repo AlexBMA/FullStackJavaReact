@@ -27,7 +27,7 @@ public class ProjectService {
     }
 
     public Project findProjectByIdentifier(String projectId){
-        return projectRepository.findByProjectIdentifier(projectId).orElse(null);
+        return projectRepository.findByProjectIdentifier(projectId.toUpperCase()).orElse(null);
     }
 
 }
