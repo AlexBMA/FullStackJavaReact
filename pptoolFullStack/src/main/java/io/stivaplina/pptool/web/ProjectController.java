@@ -1,6 +1,7 @@
 package io.stivaplina.pptool.web;
 
 import io.stivaplina.pptool.domain.Project;
+import io.stivaplina.pptool.services.MapValidationErrorService;
 import io.stivaplina.pptool.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,15 +21,17 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private MapValidationErrorService mapValidationErrorService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result){
-
-        if(result.hasErrors()){
-            return new ResponseEntity<>("Invalid Project Object", HttpStatus.BAD_REQUEST);
-        }
-
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+        if (errorMap != null) return errorMap;
+        
         Project savedProject = projectService.saveOrUpdateProject(project);
         return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
+
+
 }
